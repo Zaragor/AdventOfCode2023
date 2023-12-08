@@ -11,6 +11,13 @@ namespace AdventOfCode2023.Tests
             var result = Day3.Day3.Part1(example.Split(Environment.NewLine));
             Assert.AreEqual(4361, result);
         }
+        [TestMethod]
+        public void Part2Example()
+        {
+            var example = "467..114..\r\n...*......\r\n..35..633.\r\n......#...\r\n617*......\r\n.....+.58.\r\n..592.....\r\n......755.\r\n...$.*....\r\n.664.598..";
+            var result = Day3.Day3.Part2(example.Split(Environment.NewLine));
+            Assert.AreEqual(467835, result);
+        }
 
         [TestMethod]
         public void ParsesEngineRow()
@@ -29,6 +36,17 @@ namespace AdventOfCode2023.Tests
             Assert.AreEqual(2, result.PartNumbers.Count());
             Assert.AreEqual(467, result.PartNumbers.First().Id);
             Assert.AreEqual(114, result.PartNumbers.Last().Id);
+        }
+
+        [TestMethod]
+        public void ParsesEngineRowWithEndingDigit()
+        {
+            var example = "........56";
+            var result = new EngineRow(example);
+            Assert.AreEqual(1, result.PartNumbers.Count());
+            Assert.AreEqual(56, result.PartNumbers.First().Id);
+            Assert.AreEqual(8, result.PartNumbers.First().StartIndex);
+            Assert.AreEqual(9, result.PartNumbers.First().EndIndex);
         }
 
         [TestMethod]

@@ -6,6 +6,8 @@
 
         public IEnumerable<int> SymbolIndex { get; set; } = new List<int>();
 
+        public IEnumerable<int> StarIndex { get; set; } = new List<int>();
+
         public EngineRow(string input)
         {
             for (int i = 0; i < input.Length; i++)
@@ -14,10 +16,13 @@
                 if (Char.IsDigit(currentChar))
                 {
                     var startIndex = i;
-                    while (Char.IsDigit(currentChar) && i < input.Length - 1)
+                    while (Char.IsDigit(currentChar) && i < input.Length)
                     {
                         i++;
-                        currentChar = input[i];
+                        if (i < input.Length)
+                        {
+                            currentChar = input[i];
+                        }
                     }
                     var endIndex = i;
                     var id = Int32.Parse(input.Substring(startIndex, endIndex - startIndex));
@@ -31,6 +36,10 @@
                 if (currentChar != '.')
                 {
                     this.SymbolIndex = this.SymbolIndex.Append(i);
+                    if (currentChar == '*')
+                    {
+                        this.StarIndex = this.StarIndex.Append(i);
+                    }
                 }
             }
         }

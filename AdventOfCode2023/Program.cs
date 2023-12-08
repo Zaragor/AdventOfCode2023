@@ -4,4 +4,4 @@ using AdventOfCode2023.Day5;
 
 Console.WriteLine("Hello, World!");
 
-Console.WriteLine(Day5.Part1());
+Console.WriteLine(Day5.Part2());

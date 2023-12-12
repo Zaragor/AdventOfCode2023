@@ -30,9 +30,95 @@
             var current = FindStart(grid);
             var next = FindNext(grid, current);
             WalkPipeLoop(grid, next, current, out var loopSections);
+            ReplaceS(grid, loopSections);
+            var loopHash = loopSections.ToHashSet();
 
-            var connectedSections = FindConnectedSections(grid, loopSections);
-            return connectedSections.Where(section => section.All(point => point.x != 0 && point.y != 0 && point.y != grid.Length - 1 && point.x != grid[0].Length - 1)).Select(s => s.Count()).Sum();
+            var totalInside = 0;
+            for (var x = 0; x < grid.Length; x++)
+            {
+                var currentlyInside = false;
+                for (var y = 0; y < grid[x].Length; y++)
+                {
+                    if (loopHash.Contains((x, y)))
+                    {
+                        var currentChar = grid[y][x];
+                        if (currentChar == '-')
+                        {
+                            currentlyInside = !currentlyInside;
+                        }
+                        if (currentChar == '|' || currentChar == 'L' || currentChar == 'J' || currentChar == '.')
+                        {
+                            throw new Exception("Invalid pipe " + currentChar);
+                        }
+                        if (currentChar == 'F' || currentChar == '7')
+                        {
+                            var originalChar = currentChar;
+                            y++;
+                            currentChar = grid[y][x];
+                            while (currentChar == '|')
+                            {
+                                y++;
+                                currentChar = grid[y][x];
+                            }
+                            if (currentChar != 'L' && currentChar != 'J')
+                            {
+                                throw new Exception("Invalid pipe");
+                            }
+
+                            if (originalChar == 'F' && currentChar == 'J')
+                            {
+                                currentlyInside = !currentlyInside;
+                            }
+                            else if (originalChar == '7' && currentChar == 'L')
+                            {
+                                currentlyInside = !currentlyInside;
+                            }
+                        }
+                        continue;
+                    }
+                    if (currentlyInside)
+                    {
+                        totalInside++;
+                    }
+                }
+            }
+
+            return totalInside;
+        }
+
+        public static void ReplaceS(char[][] grid, List<(int x, int y)> loop)
+        {
+            var sPos = loop.First();
+            var sNeighbourOnePos = loop[1];
+            var sNeighbourTwoPos = loop[loop.Count - 2];
+            var sNeighbourOne = grid[sNeighbourOnePos.y][sNeighbourOnePos.x];
+            var sNeighbourTwo = grid[sNeighbourTwoPos.y][sNeighbourTwoPos.x];
+            char sCharacter;
+            switch ((sNeighbourOne, sNeighbourTwo))
+            {
+                case ('F', '|'):
+                case ('F', 'L'):
+                case ('F', 'J'):
+                case ('|', '|'):
+                case ('|', 'L'):
+                case ('|', 'J'):
+                case ('7', '|'):
+                case ('7', 'L'):
+                case ('7', 'J'):
+
+                    sCharacter = '|';
+                    break;
+                case ('|', '-'):
+                case ('-', '|'):
+                    sCharacter = 'L';
+                    break;
+                case ('J', '|'):
+                    sCharacter = 'F';
+                    break;
+                default:
+                    throw new NotImplementedException("Sorry, can't be bothered");
+            }
+            grid[sPos.y][sPos.x] = sCharacter;
         }
 
         public static (int x, int y) FindNext(char[][] grid, (int x, int y) start)
@@ -195,176 +281,7 @@
             }
         }
 
-        public static int WalkPipe(char[][] grid, (int x, int y) current, (int x, int y) previous, int distanceWalked)
-        {
-            var currentChar = grid[current.y][current.x];
-            switch (currentChar)
-            {
-                case 'S':
-                    return distanceWalked;
-                case '|':
-                    if (previous.y < current.y)
-                    {
-                        return WalkPipe(grid, (current.x, current.y + 1), current, distanceWalked + 1);
-                    }
-                    else if (previous.y > current.y)
-                    {
-                        return WalkPipe(grid, (current.x, current.y - 1), current, distanceWalked + 1);
-                    }
-                    else throw new Exception("Invalid pipe |");
-                case '-':
-                    if (previous.x < current.x)
-                    {
-                        return WalkPipe(grid, (current.x + 1, current.y), current, distanceWalked + 1);
-                    }
-                    else if (previous.x > current.x)
-                    {
-                        return WalkPipe(grid, (current.x - 1, current.y), current, distanceWalked + 1);
-                    }
-                    else throw new Exception("Invalid pipe -");
-                case 'L':
-                    if (previous.y < current.y)
-                    {
-                        return WalkPipe(grid, (current.x + 1, current.y), current, distanceWalked + 1);
-                    }
-                    else if (previous.x > current.x)
-                    {
-                        return WalkPipe(grid, (current.x, current.y - 1), current, distanceWalked + 1);
-                    }
-                    else throw new Exception("Invalid pipe L");
-                case 'J':
-                    if (previous.x < current.x)
-                    {
-                        return WalkPipe(grid, (current.x, current.y - 1), current, distanceWalked + 1);
-                    }
-                    else if (previous.y < current.y)
-                    {
-                        return WalkPipe(grid, (current.x - 1, current.y), current, distanceWalked + 1);
-                    }
-                    else throw new Exception("Invalid pipe J");
-                case '7':
-                    if (previous.x < current.x)
-                    {
-                        return WalkPipe(grid, (current.x, current.y + 1), current, distanceWalked + 1);
-                    }
-                    else if (previous.y > current.y)
-                    {
-                        return WalkPipe(grid, (current.x - 1, current.y), current, distanceWalked + 1);
-                    }
-                    else throw new Exception("Invalid pipe 7");
-                case 'F':
-                    if (previous.x > current.x)
-                    {
-                        return WalkPipe(grid, (current.x, current.y + 1), current, distanceWalked + 1);
-                    }
-                    else if (previous.y > current.y)
-                    {
-                        return WalkPipe(grid, (current.x + 1, current.y), current, distanceWalked + 1);
-                    }
-                    else throw new Exception("Invalid pipe F");
-                case '.':
-                    throw new Exception("Invalid pipe .");
-                default:
-                    throw new Exception("Invalid pipe");
-            }
-        }
 
-        public static List<List<(int x, int y)>> FindConnectedSections(char[][] grid, List<(int x, int y)> loopSections)
-        {
-            var connectedSections = new List<List<(int x, int y)>>();
-            var visited = new HashSet<(int x, int y)>();
-            var loopSectionsHash = loopSections.ToHashSet();
-            for (var x = 0; x < grid.Length; x++)
-            {
-                for (var y = 0; y < grid[x].Length; y++)
-                {
-                    if (loopSectionsHash.Contains((x, y)))
-                    {
-                        continue;
-                    }
-                    if (visited.Contains((x, y)))
-                    {
-                        continue;
-                    }
 
-                    var section = new List<(int x, int y)>() { (x, y) };
-                    connectedSections.Add(section);
-                    visited.Add((x, y));
-
-                    GreedyVisitNeighbours(visited, loopSectionsHash, section, grid, (x, y));
-                }
-            }
-            return connectedSections;
-        }
-
-        public static void GreedyVisitNeighbours(
-            HashSet<(int x, int y)> visited,
-            HashSet<(int x, int y)> loopSections,
-            List<(int x, int y)> section,
-            char[][] grid,
-            (int x, int y) point)
-        {
-            foreach (var neighbour in FindNeighbours(grid, point))
-            {
-                if (visited.Contains(neighbour))
-                {
-                    continue;
-                }
-                if (loopSections.Contains(neighbour))
-                {
-                    var loopCharacter = grid[point.y][point.x];
-                    switch (loopCharacter)
-                    {
-                        case '|':
-                            if (neighbour.x == point.x)
-                            {
-                                continue;
-                            }
-                            var leftNeighbour = grid[neighbour.y][neighbour.x - 1];
-                            var rightNeighbour = grid[neighbour.y][neighbour.x + 1];
-                            if (loopSections.Contains((neighbour.x - 1, neighbour.y)) &&
-                                (leftNeighbour == '|' || leftNeighbour == '7' || leftNeighbour == 'J'))
-                            {
-                                throw new NotImplementedException("expand downwards");
-                            }
-                            if (loopSections.Contains((neighbour.x + 1, neighbour.y)) &&
-                                (rightNeighbour == '|' || rightNeighbour == 'F' || rightNeighbour == 'L'))
-                            {
-                                throw new NotImplementedException("expand upwards");
-                            }
-                            break;
-
-                        default:
-                            throw new Exception("Invalid loop character");
-
-                    }
-                    Console.WriteLine("loop section might have gaps in it");
-                    continue;
-                }
-                section.Add(neighbour);
-                visited.Add(neighbour);
-                GreedyVisitNeighbours(visited, loopSections, section, grid, neighbour);
-            }
-        }
-
-        public static IEnumerable<(int x, int y)> FindNeighbours(char[][] grid, (int x, int y) point)
-        {
-            if (point.x - 1 > 0)
-            {
-                yield return (point.x - 1, point.y);
-            }
-            if (point.x < grid[point.y].Length - 1)
-            {
-                yield return (point.x + 1, point.y);
-            }
-            if (point.y - 1 > 0)
-            {
-                yield return (point.x, point.y - 1);
-            }
-            if (point.y < grid.Length - 2)
-            {
-                yield return (point.x, point.y + 1);
-            }
-        }
     }
 }

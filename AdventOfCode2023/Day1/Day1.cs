@@ -14,11 +14,24 @@
             ('e', "eight", 8),
             ('n', "nine", 9),
         };
+
+        public static int Part1()
+        {
+            var input = Helpers.FileHelpers.ParseInputAsString("Day1/day1.txt").ToList();
+            return Part1(input);
+        }
+
         public static int Part1(IEnumerable<string> input)
         {
             var digits = input.Select(line => line.Where(character => Char.IsDigit(character)).Select<char, int>(chararacter => Int32.Parse(chararacter.ToString())));
 
             return digits.Sum(line => line.First() * 10 + line.Last());
+        }
+
+        public static int Part2()
+        {
+            var input = Helpers.FileHelpers.ParseInputAsString("Day1/day1.txt").ToList();
+            return Part2(input);
         }
 
         public static int Part2(IEnumerable<string> input)

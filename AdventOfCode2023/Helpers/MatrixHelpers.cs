@@ -21,5 +21,21 @@
                 yield return (point.x, point.y + 1);
             }
         }
+
+        public static bool AreEqual<T>(T[][] a, T[][] b)
+        {
+            for (var i = 0; i < a.Length; i++)
+            {
+                for (var j = 0; j < a[0].Length; j++)
+                {
+                    if (!a[i][j].Equals(b[i][j]))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
     }
 }

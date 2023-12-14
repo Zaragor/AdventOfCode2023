@@ -20,6 +20,18 @@ namespace AdventOfCode2023.Tests
         }
 
         [TestMethod]
+        public void Part1()
+        {
+            Assert.AreEqual(537832, Day3.Day3.Part1());
+        }
+
+
+        [TestMethod]
+        public void Part2()
+        {
+            Assert.AreEqual(81939900, Day3.Day3.Part2());
+        }
+        [TestMethod]
         public void ParsesEngineRow()
         {
             var example = "617*......";

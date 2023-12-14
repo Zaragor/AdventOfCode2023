@@ -3,7 +3,7 @@
 namespace AdventOfCode2023.Tests
 {
     [TestClass]
-    public class Day2
+    public class Day2Tests
     {
         [TestMethod]
         public void GameConstructor_ParsesId()
@@ -11,6 +11,18 @@ namespace AdventOfCode2023.Tests
             var inputTest = "Game 135: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green";
             var game = new Game(inputTest);
             Assert.AreEqual(game.Id, 135);
+        }
+
+        [TestMethod]
+        public void Part1()
+        {
+            Assert.AreEqual(2268, Day2.Day2.Part1());
+        }
+
+        [TestMethod]
+        public void Part2()
+        {
+            Assert.AreEqual(63542, Day2.Day2.Part2());
         }
 
         [TestMethod]

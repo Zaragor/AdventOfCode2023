@@ -13,6 +13,18 @@ namespace AdventOfCode2023.Tests
         }
 
         [TestMethod]
+        public void Part1()
+        {
+            Assert.AreEqual(56506, Day1.Part1());
+        }
+
+        [TestMethod]
+        public void Part2()
+        {
+            Assert.AreEqual(56017, Day1.Part2());
+        }
+
+        [TestMethod]
         public void Part2Example()
         {
             var example = "two1nine\r\neightwothree\r\nabcone2threexyz\r\nxtwone3four\r\n4nineeightseven2\r\nzoneight234\r\n7pqrstsixteen".Split(Environment.NewLine);

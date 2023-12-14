@@ -22,7 +22,7 @@ namespace AdventOfCode2023.Tests
         [TestMethod]
         public void Part1()
         {
-            Assert.AreEqual(537832, Day3.Day3.Part1());
+            Assert.AreEqual(539277, Day3.Day3.Part1());
         }
 
 
